@@ -1,0 +1,20 @@
+1. What are your steps to start designing database?
+The steps I would take to design a database would be the following:
+- Write down entities I will need to deal with
+- Write down the relation between each entities 
+- Which ones of the entities should be stored? How would application interact with them?
+- Optimize/normalize if needed (e.g. create separate tables for many:many relationships, etc.)
+
+2. When can we say that our database is modeled correctly?
+DB is modeled correctly is when we can surely say that it's accurate (in terms of data), efficient (both data and transactions), scalable and normalized.
+
+3. What is a Data Access Layer (DAL), and how does it simplify database interactions?
+DAL is a part of the project that involves communication with the database. DAL layer can be implemented several ways, the popular ones include using an ORM (for SQL DBs e.g. EF) or a provider (for NoSQL, e.g. MongoDB driver). Other options include but not limited to Mini ORM or self-written queries (for SQL DBs).
+The presence of a DAL layer allows the developer to communicate with the DB in a much simpler and more structured way, without the need to think too much about the queries to write down.
+
+4. You need to implement a new service for a customer. How would you select database (SQL or NoSQL)?
+- Analyze the amount of data used and tables needed
+- Are strict relationships needed?
+- The format of data stored
+- How many transactions per hour/day are expected?
+- What is the expected performance level of the database?

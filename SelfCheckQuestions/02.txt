@@ -1,0 +1,24 @@
+1. What diagram types do you have on your current project?
+C4, sequence, class
+
+2. What are the pros and cons of UML diagrams?
+Pros:
++ unified system for schema drawing
++ easy to read
++ there are several types of different diagrams for developers to pick from (including design)
++ is an effective documentation tool
+Cons:
+- overwhelming
+- hard to get into
+- is unfriendly and requires many hours of documentation read
+- depending on different architectures within solutions may become too crowded and hard to read
+
+3. What is the difference between a structural diagram and a behavioral diagram in UML?
+Structural diagrams are used to display the architecture and design of the solution, while behavioral are used to demonstrate particular pieces of code in action (i.e. logic).
+
+4. Name the relationship types in a use case diagram
+Association (two or more objects are related to each other in some way), include (one uses the other), extend (optional conditional behavior), generalization (TL;DR - inheritance), dependency (shows that one may affect the other, not necessarily via direct relationship).
+
+5. What is the sequence diagram?
+Sequence diagram is a type of diagram that demonstrates a whole pipeline of application components working with each other to achieve a certain goal upon user's request. The diagram involves relations between multiple classes and components (e.g. UI, backend, DB).
+As an example, the sequence diagram may display what happens when user clicks on an "Order item", how the request evolves throughout the backend and what kind of response they may get.
