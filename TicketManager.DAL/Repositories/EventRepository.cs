@@ -1,0 +1,56 @@
+﻿using Microsoft.EntityFrameworkCore;
+using TicketManager.Common.Interface;
+using TicketManager.Common.Models;
+
+namespace TicketManager.DAL.Repositories
+{
+	public class EventRepository : IRepository<Event>
+	{
+		private AppDbContext _context;
+
+		public EventRepository(AppDbContext context)
+		{
+			_context = context;
+		}
+
+		public async Task CreateAsync(Event entity)
+		{
+			await _context.Events.AddAsync(entity);
+			await _context.SaveChangesAsync();
+		}
+
+		public async Task DeleteAsync(int id)
+		{
+			var eventToDelete = await _context.Events.FindAsync(id);
+
+			if (eventToDelete != null)
+			{
+				_context.Events.Remove(eventToDelete);
+				await _context.SaveChangesAsync();
+			}
+		}
+
+		public async Task<IList<Event>> GetAsync()
+		{
+			return await _context.Events.ToListAsync();
+		}
+
+		public async Task<Event> GetByIdAsync(int id)
+		{
+			var eventToFind = await _context.Events.FindAsync(id);
+
+			if (eventToFind == null)
+			{
+				throw new ArgumentException($"Entry by id {id} was not found.");
+			}
+
+			return eventToFind;
+		}
+
+		public async Task UpdateAsync(Event entity)
+		{
+			_context.Events.Update(entity);
+			await _context.SaveChangesAsync();
+		}
+	}
+}
