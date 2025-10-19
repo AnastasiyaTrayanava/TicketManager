@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using TicketManager.Common.Enums;
 using TicketManager.Common.Interface;
 using TicketManager.Common.Models;
 
@@ -45,6 +46,13 @@ namespace TicketManager.DAL.Repositories
 			}
 
 			return seatToFind;
+		}
+
+		public async Task<IList<Seat>> GetSortedAsync(SortingInstructions<Seat> sortingInstructions)
+		{
+			return sortingInstructions.Direction == OrderByDirection.Ascending
+				? await _context.Seats.OrderBy(sortingInstructions.OrderBy).ToListAsync()
+				: await _context.Seats.OrderByDescending(sortingInstructions.OrderBy).ToListAsync();
 		}
 
 		public async Task UpdateAsync(Seat entity)

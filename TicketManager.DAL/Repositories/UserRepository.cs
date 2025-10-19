@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using TicketManager.Common.Enums;
 using TicketManager.Common.Interface;
 using TicketManager.Common.Models;
 
@@ -50,6 +46,13 @@ namespace TicketManager.DAL.Repositories
 			}
 
 			return userToFind;
+		}
+
+		public async Task<IList<User>> GetSortedAsync(SortingInstructions<User> sortingInstructions)
+		{
+			return sortingInstructions.Direction == OrderByDirection.Ascending
+				? await _context.Users.OrderBy(sortingInstructions.OrderBy).ToListAsync()
+				: await _context.Users.OrderByDescending(sortingInstructions.OrderBy).ToListAsync();
 		}
 
 		public async Task UpdateAsync(User entity)

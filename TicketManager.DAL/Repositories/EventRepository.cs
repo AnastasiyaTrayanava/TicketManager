@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using TicketManager.Common.Enums;
 using TicketManager.Common.Interface;
 using TicketManager.Common.Models;
 
@@ -45,6 +46,13 @@ namespace TicketManager.DAL.Repositories
 			}
 
 			return eventToFind;
+		}
+
+		public async Task<IList<Event>> GetSortedAsync(SortingInstructions<Event> sortingInstructions)
+		{
+			return sortingInstructions.Direction == OrderByDirection.Ascending
+				? await _context.Events.OrderBy(sortingInstructions.OrderBy).ToListAsync()
+				: await _context.Events.OrderByDescending(sortingInstructions.OrderBy).ToListAsync();
 		}
 
 		public async Task UpdateAsync(Event entity)

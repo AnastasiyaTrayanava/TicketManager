@@ -1,13 +1,22 @@
-﻿namespace TicketManager.Common.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace TicketManager.Common.Models
 {
 	public class Ticket
 	{
+		[Required]
 		public int Id { get; set; }
+		[MaxLength(100), Required]
 		public int UserId { get; set; }
+		[MaxLength(100), Required]
 		public int EventId { get; set; }
+		[MaxLength(100), Required]
 		public int VenueId { get; set; }
+		[MaxLength(100), Required]
 		public int SectionId { get; set; }
+		[MaxLength(100), Required]
 		public int RowId { get; set; }
+		[MaxLength(100), Required]
 		public int SeatId { get; set; }
 
 		public User User { get; set; }

@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Sockets;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using TicketManager.Common.Enums;
 using TicketManager.Common.Interface;
 using TicketManager.Common.Models;
 
@@ -51,6 +46,13 @@ namespace TicketManager.DAL.Repositories
 			}
 
 			return ticketToFind;
+		}
+
+		public async Task<IList<Ticket>> GetSortedAsync(SortingInstructions<Ticket> sortingInstructions)
+		{
+			return sortingInstructions.Direction == OrderByDirection.Ascending
+				? await _context.Tickets.OrderBy(sortingInstructions.OrderBy).ToListAsync()
+				: await _context.Tickets.OrderByDescending(sortingInstructions.OrderBy).ToListAsync();
 		}
 
 		public async Task UpdateAsync(Ticket entity)
