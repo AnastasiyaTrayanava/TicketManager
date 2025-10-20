@@ -5,7 +5,7 @@ using TicketManager.Common.Models;
 
 namespace TicketManager.DAL.Repositories
 {
-	public class VenueRepository : IRepository<Venue>
+	public class VenueRepository : IRepository<Venue, int>
 	{
 		private AppDbContext _context;
 
@@ -14,10 +14,11 @@ namespace TicketManager.DAL.Repositories
 			_context = context;
 		}
 
-		public async Task CreateAsync(Venue entity)
+		public async Task<int> CreateAsync(Venue entity)
 		{
 			await _context.Venues.AddAsync(entity);
 			await _context.SaveChangesAsync();
+			return entity.VenueId;
 		}
 
 		public async Task DeleteAsync(int id)

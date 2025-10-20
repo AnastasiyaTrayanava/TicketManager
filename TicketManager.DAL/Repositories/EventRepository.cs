@@ -5,7 +5,7 @@ using TicketManager.Common.Models;
 
 namespace TicketManager.DAL.Repositories
 {
-	public class EventRepository : IRepository<Event>
+	public class EventRepository : IRepository<Event, int>
 	{
 		private AppDbContext _context;
 
@@ -14,10 +14,11 @@ namespace TicketManager.DAL.Repositories
 			_context = context;
 		}
 
-		public async Task CreateAsync(Event entity)
+		public async Task<int> CreateAsync(Event entity)
 		{
 			await _context.Events.AddAsync(entity);
 			await _context.SaveChangesAsync();
+			return entity.EventId;
 		}
 
 		public async Task DeleteAsync(int id)
@@ -38,7 +39,13 @@ namespace TicketManager.DAL.Repositories
 
 		public async Task<Event> GetByIdAsync(int id)
 		{
-			var eventToFind = await _context.Events.FindAsync(id);
+			var eventToFind = await _context.Events
+				.Include(e => e.Venue)
+				.ThenInclude(v => v.Sections)
+				.ThenInclude(s => s.Rows)
+				.ThenInclude(r => r.Seats)
+				.ThenInclude(seat => seat.Price)
+				.FirstOrDefaultAsync(x => x.EventId == id);
 
 			if (eventToFind == null)
 			{
