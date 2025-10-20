@@ -23,11 +23,11 @@ namespace TicketManager.Controllers.Ticketing
 
 		[HttpGet]
 		[Route("cartId")]
-		public async Task<IActionResult> Get(string cartId)
+		public async Task<IActionResult> Get(Guid cartId)
 		{
 			try
 			{
-				var cart = await _cartRepository.GetByIdAsync(new Guid(cartId));
+				var cart = await _cartRepository.GetByIdAsync(cartId);
 				return Ok(cart.Items);
 			}
 			catch (Exception e)
@@ -39,11 +39,11 @@ namespace TicketManager.Controllers.Ticketing
 
 		[HttpPost]
 		[Route("cartId")]
-		public async Task<IActionResult> AddToCart(string cartId, [FromBody] CartItemViewModel addedSeat)
+		public async Task<IActionResult> AddToCart(Guid cartId, [FromBody] CartItemViewModel addedSeat)
 		{
 			try
 			{
-				var cart = await _cartRepository.GetByIdAsync(new Guid(cartId));
+				var cart = await _cartRepository.GetByIdAsync(cartId);
 				cart.Items.Add(new CartItem()
 				{
 					EventId = addedSeat.EventId,
@@ -63,11 +63,11 @@ namespace TicketManager.Controllers.Ticketing
 
 		[HttpDelete]
 		[Route("{cartId}/events/{eventId}/seats/{seatId}")]
-		public async Task<IActionResult> RemoveFromCart(string cartId, int eventId, int seatId)
+		public async Task<IActionResult> RemoveFromCart(Guid cartId, int eventId, int seatId)
 		{
 			try
 			{
-				var cart = await _cartRepository.GetByIdAsync(new Guid(cartId));
+				var cart = await _cartRepository.GetByIdAsync(cartId);
 				var seatToRemove = cart.Items.First(x => x.EventId == eventId && x.SeatId == seatId);
 				cart.Items.Remove(seatToRemove);
 				await _cartRepository.UpdateAsync(cart);
@@ -83,11 +83,11 @@ namespace TicketManager.Controllers.Ticketing
 
 		[HttpPut]
 		[Route("{cartId}/book")]
-		public async Task<IActionResult> BookSeats(string cartId) //to GUID
+		public async Task<IActionResult> BookSeats(Guid cartId)
 		{
 			try
 			{
-				var cart = await _cartRepository.GetByIdAsync(new Guid(cartId));
+				var cart = await _cartRepository.GetByIdAsync(cartId);
 				var seats = cart.Items.Select(x => x.Seat);
 
 				var payment = new Payment()
