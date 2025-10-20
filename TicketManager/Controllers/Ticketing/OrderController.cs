@@ -4,6 +4,7 @@ using TicketManager.Common.Interface;
 using TicketManager.Common.Models;
 using TicketManager.Common.Models.Entities;
 using TicketManager.Common.Models.ViewModels;
+using TicketManager.DAL;
 
 namespace TicketManager.Controllers.Ticketing
 {
@@ -13,12 +14,14 @@ namespace TicketManager.Controllers.Ticketing
 		private IRepository<Cart, Guid> _cartRepository;
 		private IRepository<Seat, int> _seatRepository;
 		private IRepository<Payment, int> _paymentRepository;
+		private AppDbContext _dbContext;
 
-		public OrderController(IRepository<Cart, Guid> cartRepository, IRepository<Seat, int> seatRepository, IRepository<Payment, int> paymentRepository)
+		public OrderController(IRepository<Cart, Guid> cartRepository, IRepository<Seat, int> seatRepository, IRepository<Payment, int> paymentRepository, AppDbContext dbContext)
 		{
 			_cartRepository = cartRepository;
 			_seatRepository = seatRepository;
 			_paymentRepository = paymentRepository;
+			_dbContext = dbContext;
 		}
 
 		[HttpGet]
@@ -85,6 +88,8 @@ namespace TicketManager.Controllers.Ticketing
 		[Route("{cartId}/book")]
 		public async Task<IActionResult> BookSeats(Guid cartId)
 		{
+			var transaction = await _dbContext.Database.BeginTransactionAsync();
+
 			try
 			{
 				var cart = await _cartRepository.GetByIdAsync(cartId);
@@ -103,11 +108,13 @@ namespace TicketManager.Controllers.Ticketing
 				}
 
 				var id = await _paymentRepository.CreateAsync(payment);
-				
+
+				await transaction.CommitAsync();
 				return Ok(id);
 			}
 			catch (Exception e)
 			{
+				await transaction.RollbackAsync();
 				Console.WriteLine(e);
 				return StatusCode(500);
 			}

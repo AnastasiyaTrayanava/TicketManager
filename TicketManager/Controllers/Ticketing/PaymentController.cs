@@ -3,6 +3,7 @@ using TicketManager.Common.Enums;
 using TicketManager.Common.Interface;
 using TicketManager.Common.Models;
 using TicketManager.Common.Models.Entities;
+using TicketManager.DAL;
 
 namespace TicketManager.Controllers.Ticketing
 {
@@ -12,12 +13,14 @@ namespace TicketManager.Controllers.Ticketing
 		private IRepository<Payment, int> _paymentRepository;
 		private IRepository<Cart, Guid> _cartRepository;
 		private IRepository<Seat, int> _seatRepository;
+		private AppDbContext _dbContext;
 
-		public PaymentController(IRepository<Payment, int> paymentRepository, IRepository<Cart, Guid> cartRepository, IRepository<Seat, int> seatRepository)
+		public PaymentController(IRepository<Payment, int> paymentRepository, IRepository<Cart, Guid> cartRepository, IRepository<Seat, int> seatRepository, AppDbContext dbContext)
 		{
 			_paymentRepository = paymentRepository;
 			_cartRepository = cartRepository;
 			_seatRepository = seatRepository;
+			_dbContext = dbContext;
 		}
 
 		[HttpGet]
@@ -40,26 +43,17 @@ namespace TicketManager.Controllers.Ticketing
 		[Route("{paymentId}/complete")]
 		public async Task<IActionResult> Complete(int paymentId)
 		{
+			var transaction = await _dbContext.Database.BeginTransactionAsync();
 			try
 			{
-				var paymentToUpdate = await _paymentRepository.GetByIdAsync(paymentId);
-				paymentToUpdate.PaymentStatus = PaymentStatus.Complete;
+				await UpdatePayment(paymentId, SeatState.Sold, PaymentStatus.Complete);
 
-				var cart = await _cartRepository.GetByIdAsync(paymentToUpdate.CartId);
-				var seats = cart.Items.Select(x => x.Seat);
-
-				foreach (var seat in seats)
-				{
-					seat.SeatState = SeatState.Booked;
-					await _seatRepository.UpdateAsync(seat);
-				}
-
-				await _paymentRepository.UpdateAsync(paymentToUpdate);
-
+				await transaction.CommitAsync();
 				return Ok();
 			}
 			catch (Exception e)
 			{
+				await transaction.RollbackAsync();
 				Console.WriteLine(e);
 				return StatusCode(500);
 			}
@@ -69,29 +63,37 @@ namespace TicketManager.Controllers.Ticketing
 		[Route("{paymentId}/failed")]
 		public async Task<IActionResult> Failed(int paymentId)
 		{
+			var transaction = await _dbContext.Database.BeginTransactionAsync();
 			try
 			{
-				var paymentToUpdate = await _paymentRepository.GetByIdAsync(paymentId);
-				paymentToUpdate.PaymentStatus = PaymentStatus.Failed;
+				await UpdatePayment(paymentId, SeatState.Available, PaymentStatus.Failed);
 
-				var cart = await _cartRepository.GetByIdAsync(paymentToUpdate.CartId);
-				var seats = cart.Items.Select(x => x.Seat);
-
-				foreach (var seat in seats)
-				{
-					seat.SeatState = SeatState.Available;
-					await _seatRepository.UpdateAsync(seat);
-				}
-
-				await _paymentRepository.UpdateAsync(paymentToUpdate);
-
+				await transaction.CommitAsync();
 				return Ok();
 			}
 			catch (Exception e)
 			{
+				await transaction.RollbackAsync();
 				Console.WriteLine(e);
 				return StatusCode(500);
 			}
+		}
+
+		private async Task UpdatePayment(int paymentId, SeatState seatState, PaymentStatus paymentStatus)
+		{
+			var paymentToUpdate = await _paymentRepository.GetByIdAsync(paymentId);
+			paymentToUpdate.PaymentStatus = paymentStatus;
+
+			var cart = await _cartRepository.GetByIdAsync(paymentToUpdate.CartId);
+			var seats = cart.Items.Select(x => x.Seat);
+
+			foreach (var seat in seats)
+			{
+				seat.SeatState = seatState;
+				await _seatRepository.UpdateAsync(seat);
+			}
+
+			await _paymentRepository.UpdateAsync(paymentToUpdate);
 		}
 	}
 }

@@ -1,0 +1,39 @@
+1. What are the benefits and drawbacks of async programming?
+Pros:
++ multithreading for poor people (managed threading that is completely handled by the application depending on available threads, does not require developer's input to manage the resources)
++ does not block application while performing heavy tasks
++ great to use for IO, like File system or DB
+Cons:
+- harder to implement
+- may become hard to debug
+- if implemented incorrectly may completely ignore certain errors and exceptions thrown
+
+2. How to make APS.NET controller action support async flow?
+To make an ASP.NET controller support async flow it is required to add an "async" keyword, then change the return type to Task<IActionResult> or Task<ActionResult<T>>. The method body requires an awaiter to run asynchronously. Return type can either be a standard status code (e.g. BadRequest()) or a CreatedAtAction with a body of an entity.
+
+3. How does async flow influences APS.NET request executions (life cycle)?
+Async flow adds a step when a free thread is allocated for a "background" execution of the async task which later gets returned and another thread is used to continue the execution of the operation.
+
+4. List at least 5 tips on ASP.NET API performance best practices.
+- Cache as much as possible
+- Avoid blocking calls
+- Don't return large data across multiple pages
+- Optimize data access and IO
+- Minimize large objects allocations
+
+5. Vertical vs Horizontal scalability. Where to use each?
+No matter the area in which scalability is being discussed, the definition for each is:
+Vertical scalability - scale by adding more power (e.g. CPU, RAM, etc.).
+Horizontal scalability - scale by adding more instances of the same power (e.g. 2 or more computers).
+Vertical scalability is often used for systems that are hard to distribute or those with high resource needs, while horizontal is used for stateless architectures (e.g. microservices), applications with unpredictable traffic.
+
+6. Explain why the PUT method was suggested for the book action on the order.
+I assume PUT is used there because this method is usually directed at idempotent resources. Meaning these are the resources which will not change the state of the server, no matter how much we call this particular method. While usage for POST may cause different effects.
+Example:
+POST /users/create_user
+{ ... some data for user ... }
+(results in creating users)
+
+PUT /users/1
+{ ... some data for user ... }
+(results in doing nothing to user, their data will stay the same)

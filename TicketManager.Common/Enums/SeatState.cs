@@ -4,6 +4,6 @@
 	{
 		Available,
 		Reserved,
-		Booked,
+		Sold,
 	}
 }
