@@ -39,7 +39,7 @@ namespace TicketManager.DAL.Repositories
 
 		public async Task<Venue> GetByIdAsync(int id)
 		{
-			var venueToFind = await _context.Venues.FindAsync(id);
+			var venueToFind = await _context.Venues.Include(v => v.Sections).FirstOrDefaultAsync(x => x.VenueId == id);
 
 			if (venueToFind == null)
 			{

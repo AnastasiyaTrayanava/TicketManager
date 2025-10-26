@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using TicketManager.Common.Extensions;
 using TicketManager.Common.Interface;
 using TicketManager.Common.Models;
-using TicketManager.Common.Models.ViewModels;
 
 namespace TicketManager.Controllers.Ticketing
 {
@@ -38,26 +38,7 @@ namespace TicketManager.Controllers.Ticketing
 			try
 			{
 				var section = await _sectionRepository.GetByIdAsync(sectionId);
-				var viewModel = new EventSectionViewModel()
-				{
-					Rows = section.Rows.Select(x =>
-						new EventSectionRowViewModel()
-						{
-							Seats = x.Seats.Select(y =>
-								new EventSectionSeatViewModel()
-								{
-									Prices = y.Price.Select(z => new EventSectionPriceViewModel()
-									{
-										PriceId = z.PriceId,
-										PriceTier = z.PriceTier,
-										PriceValue = z.PriceValue
-									}).ToList(),
-									SeatId = y.SeatId,
-									SeatState = y.SeatState
-								}).ToList(),
-							RowId = x.RowId
-						}).ToList()
-				};
+				var viewModel = section.ToViewModel();
 
 				return Ok(viewModel);
 			}
