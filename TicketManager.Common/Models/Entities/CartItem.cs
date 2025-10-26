@@ -19,7 +19,7 @@ namespace TicketManager.Common.Models.Entities
 		public int PriceId { get; set; }
 		
 		[MaxLength(100), Required]
-		public string CartId { get; set; }
+		public Guid CartId { get; set; }
 
 		public Event Event { get; set; }
 		
