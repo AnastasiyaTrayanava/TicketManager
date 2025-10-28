@@ -8,9 +8,9 @@ namespace TicketManager.DAL.Repositories
 {
 	public class CartRepository : IRepository<Cart, Guid>
 	{
-		private AppDbContext _context;
+		private IAppDbContext _context;
 
-		public CartRepository(AppDbContext context)
+		public CartRepository(IAppDbContext context)
 		{
 			_context = context;
 		}

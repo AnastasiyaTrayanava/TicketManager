@@ -7,9 +7,9 @@ namespace TicketManager.DAL.Repositories
 {
 	public class PriceRepository : IRepository<Price, int>
 	{
-		private AppDbContext _context;
+		private IAppDbContext _context;
 
-		public PriceRepository(AppDbContext context)
+		public PriceRepository(IAppDbContext context)
 		{
 			_context = context;
 		}

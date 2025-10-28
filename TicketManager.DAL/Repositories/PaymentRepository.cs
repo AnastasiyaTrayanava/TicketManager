@@ -8,9 +8,9 @@ namespace TicketManager.DAL.Repositories
 {
 	public class PaymentRepository : IRepository<Payment, int>
 	{
-		private AppDbContext _context;
+		private IAppDbContext _context;
 
-		public PaymentRepository(AppDbContext context)
+		public PaymentRepository(IAppDbContext context)
 		{
 			_context = context;
 		}

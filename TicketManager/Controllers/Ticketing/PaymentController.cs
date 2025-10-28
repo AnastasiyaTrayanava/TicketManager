@@ -13,9 +13,9 @@ namespace TicketManager.Controllers.Ticketing
 		private IRepository<Payment, int> _paymentRepository;
 		private IRepository<Cart, Guid> _cartRepository;
 		private IRepository<Seat, int> _seatRepository;
-		private AppDbContext _dbContext;
+		private IAppDbContext _dbContext;
 
-		public PaymentController(IRepository<Payment, int> paymentRepository, IRepository<Cart, Guid> cartRepository, IRepository<Seat, int> seatRepository, AppDbContext dbContext)
+		public PaymentController(IRepository<Payment, int> paymentRepository, IRepository<Cart, Guid> cartRepository, IRepository<Seat, int> seatRepository, IAppDbContext dbContext)
 		{
 			_paymentRepository = paymentRepository;
 			_cartRepository = cartRepository;

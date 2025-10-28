@@ -7,9 +7,9 @@ namespace TicketManager.DAL.Repositories
 {
 	public class VenueRepository : IRepository<Venue, int>
 	{
-		private AppDbContext _context;
+		private IAppDbContext _context;
 
-		public VenueRepository(AppDbContext context)
+		public VenueRepository(IAppDbContext context)
 		{
 			_context = context;
 		}

@@ -7,9 +7,9 @@ namespace TicketManager.DAL.Repositories
 {
 	public class SectionRepository : IRepository<Section, int>
 	{
-		private AppDbContext _context;
+		private IAppDbContext _context;
 
-		public SectionRepository(AppDbContext context)
+		public SectionRepository(IAppDbContext context)
 		{
 			_context = context;
 		}
