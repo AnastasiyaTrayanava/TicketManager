@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Storage;
 using TicketManager.Common.Interface;
 using TicketManager.Common.Models;
 using TicketManager.Common.Models.Entities;
@@ -36,15 +35,7 @@ namespace TicketManager.DAL
 
 		public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
 		{
-			if (cancellationToken != default)
-			{
-				return await base.SaveChangesAsync(cancellationToken);
-			}
-			else
-			{
-				return await base.SaveChangesAsync();
-			}
-				
+			return await base.SaveChangesAsync(cancellationToken);
 		}
 	}
 }
