@@ -2,7 +2,7 @@
 using Moq;
 using TicketManager.Common.Enums;
 using TicketManager.Common.Interface;
-using TicketManager.Common.Models;
+using TicketManager.Common.Models.Entities;
 using TicketManager.Common.Models.ViewModels;
 using TicketManager.Controllers.Ticketing;
 

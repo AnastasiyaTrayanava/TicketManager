@@ -1,0 +1,51 @@
+1. What are benefits and drawbacks of unit tests?
+Pros:
++ Relatively easy to write
++ Were created to test particular pieces of code without anything from "the outside" (e.g. DB, Front-end, other services)
++ There are many frameworks and libraries that allow easy and intuitive unit testing API
++ Outside services have to be mocked (i.e. not involved in unit tests)
++ The process of creating unit tests may reveal possible architectural issues within the solution
+Cons:
+- If a class uses many services that have to be mocked, the mocking process may become too crowded or too complicated. As an example, it's hard to mock EF's API without additional libraries
+- These tests only cover particular pieces of code (e.g. one method). Their relation between other classes are not covered, so it's hard to test and see if there are any issues between them
+- Sometimes implementing unit-testing may bring to significant architecture re-writing, as it requires DI to be in tact (which is itself isn't a bad thing, but can be an issue in legacy solutions)
+- Do not guarantee there aren't any bugs
+
+2. What are benefits and drawbacks of integration tests?
+Pros:
++ Tests integration between different components of the application (including different services, File System, DB, etc.)
++ Covers a significant portion of code involved
++ Brings wider test coverage
+Cons:
+- Much harder and slower to write as it requires to setup all the components for testing in the solution
+- Has a bigger learning curve (than unit tests)
+- Consumes a lot of resources
+- Are complex
+- Will fail if 3rd party components are unavailable
+
+3. What are benefits and drawbacks of end-to-end tests?
+Pros:
++ Test scenarios from a user perspective, from a button click to the last database query run
++ Ensures every component works well with each other
+Cons:
+- Are too complex to implement
+- Requires maintenance
+- Slow in execution
+- May be hard to debug
+
+4. When/why you would do database integration tests?
+Database integration tests are needed to make sure the code communicates with the DB with no issues or visible problems.
+
+5. How testing trophy differs from testing pyramid model?
+Long story short, testing trophy reprioritizes the testing types, shifting the need from cheaper and faster unit-tests to integration tests, that are generally more time and effort consuming but are crucial, especially in modern applications that use scalable architectures.
+
+6. What code coverage metrics do you know? What metric would you use?
+There are many coverage metrics, grouped together by specific criteria, but here are ones of the most common ones:
+Line Coverage (measures whether a particular line was called or not)
+Statement Coverage (similar to line but for statements that could be present in multiple instances on a single line)
+NCover's Sequence-Point Coverage (measures the same for each step of the code)
+Branch Coverage (measures the same for independent segments of code)
+Others include but not limited to path, loop, state coverages, etc.
+
+7. What is practically reasonable percent of code coverage?
+As much as possible, but anywhere close 80% is good enough.

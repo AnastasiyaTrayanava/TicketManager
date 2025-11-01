@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace TicketManager.Common.Models
+namespace TicketManager.Common.Models.Entities
 {
 	public class Row
 	{
@@ -13,6 +13,7 @@ namespace TicketManager.Common.Models
 		
 		public int SectionId { get; set; }
 
+		[ForeignKey("SectionId")]
 		public Section Section { get; set; }
 	}
 }

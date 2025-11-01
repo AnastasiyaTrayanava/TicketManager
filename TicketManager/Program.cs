@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using TicketManager.Common.Interface;
-using TicketManager.Common.Models;
 using TicketManager.Common.Models.Entities;
 using TicketManager.DAL;
 using TicketManager.DAL.Repositories;

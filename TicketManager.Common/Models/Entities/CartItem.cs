@@ -21,12 +21,16 @@ namespace TicketManager.Common.Models.Entities
 		[MaxLength(100), Required]
 		public Guid CartId { get; set; }
 
+		[ForeignKey("EventId")]
 		public Event Event { get; set; }
-		
+
+		[ForeignKey("SeatId")]
 		public Seat Seat { get; set; }
-		
+
+		[ForeignKey("PriceId")]
 		public Price Price { get; set; }
-		
+
+		[ForeignKey("CartId")]
 		public Cart Cart { get; set; }
 	}
 }

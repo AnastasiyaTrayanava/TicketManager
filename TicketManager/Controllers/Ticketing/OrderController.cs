@@ -42,16 +42,21 @@ namespace TicketManager.Controllers.Ticketing
 
 		[HttpPost]
 		[Route("cartId")]
-		public async Task<IActionResult> AddToCart(Guid cartId, [FromBody] CartItemViewModel addedSeat)
+		public async Task<IActionResult> AddToCart(Guid cartId, [FromBody] CartItemViewModel addedCartItem)
 		{
 			try
 			{
+				if (addedCartItem.EventId == null || addedCartItem.PriceId == null || addedCartItem.SeatId == null)
+				{
+					return BadRequest();
+				}
+
 				var cart = await _cartRepository.GetByIdAsync(cartId);
 				cart.Items.Add(new CartItem()
 				{
-					EventId = addedSeat.EventId,
-					PriceId = addedSeat.PriceId,
-					SeatId = addedSeat.SeatId
+					EventId = (int)addedCartItem.EventId,
+					PriceId = (int)addedCartItem.PriceId,
+					SeatId = (int)addedCartItem.SeatId
 				});
 				await _cartRepository.UpdateAsync(cart);
 
@@ -94,6 +99,11 @@ namespace TicketManager.Controllers.Ticketing
 			{
 				var cart = await _cartRepository.GetByIdAsync(cartId);
 				var seats = cart.Items.Select(x => x.Seat);
+
+				if (!seats.Any())
+				{
+					return BadRequest();
+				}
 
 				var payment = new Payment()
 				{

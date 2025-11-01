@@ -9,7 +9,7 @@ namespace TicketManager.Common.Models.Entities
 		[Key]
 		[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
 		public int PaymentId { get; set; }
-		
+
 		public Guid CartId { get; set; }
 		
 		public PaymentStatus PaymentStatus { get; set; }

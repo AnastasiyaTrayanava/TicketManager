@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Moq;
 using TicketManager.Common.Interface;
-using TicketManager.Common.Models;
+using TicketManager.Common.Models.Entities;
 using TicketManager.Controllers.Ticketing;
 
 namespace TicketManager.Test.Controllers

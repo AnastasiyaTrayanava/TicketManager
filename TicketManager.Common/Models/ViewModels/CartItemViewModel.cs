@@ -2,8 +2,8 @@
 {
 	public class CartItemViewModel
 	{
-		public int EventId { get; set; }
-		public int SeatId { get; set; }
-		public int PriceId { get; set; }
+		public int? EventId { get; set; }
+		public int? SeatId { get; set; }
+		public int? PriceId { get; set; }
 	}
 }

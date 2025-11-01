@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using TicketManager.Common.Enums;
 
-namespace TicketManager.Common.Models
+namespace TicketManager.Common.Models.Entities
 {
 	public class Price
 	{
@@ -16,6 +16,7 @@ namespace TicketManager.Common.Models
 		
 		public int SeatId { get; set; }
 
+		[ForeignKey("SeatId")]
 		public Seat Seat { get; set; }
 	}
 }

@@ -10,9 +10,10 @@ namespace TicketManager.Common.Models.Entities
 		public Guid CartId { get; set; }
 		
 		public List<CartItem> Items { get; set; }
-		
+
 		public int? PaymentId { get; set; }
 
+		[ForeignKey("PaymentId")]
 		public Payment? Payment { get; set; }
 
 		[NotMapped]

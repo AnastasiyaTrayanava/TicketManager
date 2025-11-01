@@ -2,6 +2,7 @@
 using TicketManager.Common.Enums;
 using TicketManager.Common.Interface;
 using TicketManager.Common.Models;
+using TicketManager.Common.Models.Entities;
 
 namespace TicketManager.DAL.Repositories
 {

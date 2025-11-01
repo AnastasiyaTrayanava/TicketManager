@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace TicketManager.Common.Models
+namespace TicketManager.Common.Models.Entities
 {
 	public class Event
 	{
@@ -20,6 +20,7 @@ namespace TicketManager.Common.Models
 		[Required]
 		public DateTime DateTime { get; set; }
 
+		[ForeignKey("VenueId")]
 		public Venue Venue { get; set; }
 	}
 }

@@ -1,4 +1,4 @@
-﻿using TicketManager.Common.Models;
+﻿using TicketManager.Common.Models.Entities;
 using TicketManager.Common.Models.ViewModels;
 
 namespace TicketManager.Common.Extensions

@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace TicketManager.Common.Models
+namespace TicketManager.Common.Models.Entities
 {
 	public class Venue
 	{

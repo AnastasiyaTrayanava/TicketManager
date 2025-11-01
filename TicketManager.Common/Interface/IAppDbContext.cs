@@ -1,7 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Storage;
-using TicketManager.Common.Models;
 using TicketManager.Common.Models.Entities;
 
 namespace TicketManager.Common.Interface

@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using TicketManager.Common.Interface;
-using TicketManager.Common.Models;
 using TicketManager.Common.Models.Entities;
 
 namespace TicketManager.DAL
@@ -20,17 +19,18 @@ namespace TicketManager.DAL
 		public virtual DbSet<Cart> Carts { get; set; }
 		public virtual DatabaseFacade Database { get; set; }
 
-		public string DbPath { get; }
-
-		public AppDbContext(string dbPath)
+		public AppDbContext()
 		{
-			DbPath = dbPath;
+			Database = base.Database;
+		}
+
+		public AppDbContext(DbContextOptions<AppDbContext> contextOptions) : base(contextOptions)
+		{
 			Database = base.Database;
 		}
 
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		{
-			optionsBuilder.UseSqlServer(DbPath);
 		}
 
 		public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
