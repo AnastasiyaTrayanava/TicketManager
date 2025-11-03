@@ -95,5 +95,19 @@ namespace TicketManager.IntegrationTest
 			Assert.IsNotNull(result);
 			Assert.AreEqual(400, result.StatusCode);
 		}
+
+		[TestMethod]
+		public async Task Add_Item_To_Cart_And_Book_Tickets()
+		{
+			var cartGuid = new Guid("c9d8e0bf-33d5-4233-8215-a24a825763e3");
+			var cartItem = new CartItemViewModel() { EventId = 0, PriceId = 0, SeatId = 3 };
+
+			var result = await _orderController.AddToCart(cartGuid, cartItem) as OkObjectResult;
+
+			Assert.IsNotNull(result);
+			Assert.AreEqual(3, ((Cart)result.Value).Items.Count);
+
+
+		}
 	}
 }

@@ -35,7 +35,6 @@ namespace TicketManager.Test.Controllers
 
 			_eventRepositoryMock.Setup(x => x.GetAsync()).ReturnsAsync(mockedEventList);
 			IList<Event> thingies = new List<Event>();
-			_memoryCacheMock.Setup(x => x.TryGetValue<IList<Event>>(It.IsAny<object>(), out thingies).Returns(false);
 
 			var result = await _eventController.Get() as OkObjectResult;
 

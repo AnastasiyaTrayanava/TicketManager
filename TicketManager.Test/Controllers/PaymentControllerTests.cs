@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore.Storage;
 using Moq;
 using TicketManager.Common.Enums;
 using TicketManager.Common.Interface;
-using TicketManager.Common.Models;
 using TicketManager.Common.Models.Entities;
 using TicketManager.Controllers.Ticketing;
 using TicketManager.DAL;
@@ -17,7 +16,7 @@ namespace TicketManager.Test.Controllers
 		private Mock<IRepository<Payment, int>> _paymentRepositoryMock;
 		private Mock<IRepository<Cart, Guid>>_cartRepositoryMock;
 		private Mock<IRepository<Seat, int>> _seatRepositoryMock;
-		private Mock<IAppDbContext> _dbContextMock;
+		private Mock<AppDbContext> _dbContextMock;
 
 		private PaymentController _paymentController;
 
@@ -27,7 +26,7 @@ namespace TicketManager.Test.Controllers
 			_cartRepositoryMock = new Mock<IRepository<Cart, Guid>>();
 			_seatRepositoryMock = new Mock<IRepository<Seat, int>>();
 
-			_dbContextMock = new Mock<IAppDbContext>();
+			_dbContextMock = new Mock<AppDbContext>();
 
 			_paymentController = new PaymentController(_paymentRepositoryMock.Object, _cartRepositoryMock.Object,
 				_seatRepositoryMock.Object, _dbContextMock.Object);

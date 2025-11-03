@@ -5,7 +5,6 @@ using Microsoft.Extensions.Caching.Memory;
 using Moq;
 using TicketManager.Common.Enums;
 using TicketManager.Common.Interface;
-using TicketManager.Common.Models;
 using TicketManager.Common.Models.Entities;
 using TicketManager.Common.Models.ViewModels;
 using TicketManager.Controllers.Ticketing;
@@ -19,7 +18,7 @@ namespace TicketManager.Test.Controllers
 		private Mock<IRepository<Cart, Guid>> _cartRepositoryMock;
 		private Mock<IRepository<Seat, int>> _seatRepositoryMock;
 		private Mock<IRepository<Payment, int>> _paymentRepositoryMock;
-		private Mock<IAppDbContext> _dbContextMock;
+		private Mock<AppDbContext> _dbContextMock;
 		private Mock<IMemoryCache> _memoryCacheMock;
 
 		private OrderController _orderController;
@@ -30,7 +29,7 @@ namespace TicketManager.Test.Controllers
 			_seatRepositoryMock = new Mock<IRepository<Seat, int>>();
 			_paymentRepositoryMock = new Mock<IRepository<Payment, int>>();
 
-			_dbContextMock = new Mock<IAppDbContext>();
+			_dbContextMock = new Mock<AppDbContext>();
 			_memoryCacheMock = new Mock<IMemoryCache>();
 
 			_orderController = new OrderController(_cartRepositoryMock.Object, _seatRepositoryMock.Object,
