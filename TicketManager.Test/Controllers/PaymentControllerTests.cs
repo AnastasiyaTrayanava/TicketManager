@@ -17,7 +17,7 @@ namespace TicketManager.Test.Controllers
 		private Mock<IRepository<Payment, int>> _paymentRepositoryMock;
 		private Mock<IRepository<Cart, Guid>>_cartRepositoryMock;
 		private Mock<IRepository<Seat, int>> _seatRepositoryMock;
-		private Mock<AppDbContext> _dbContextMock;
+		private Mock<IAppDbContext> _dbContextMock;
 
 		private PaymentController _paymentController;
 
@@ -27,7 +27,7 @@ namespace TicketManager.Test.Controllers
 			_cartRepositoryMock = new Mock<IRepository<Cart, Guid>>();
 			_seatRepositoryMock = new Mock<IRepository<Seat, int>>();
 
-			_dbContextMock = new Mock<AppDbContext>("dbString");
+			_dbContextMock = new Mock<IAppDbContext>();
 
 			_paymentController = new PaymentController(_paymentRepositoryMock.Object, _cartRepositoryMock.Object,
 				_seatRepositoryMock.Object, _dbContextMock.Object);

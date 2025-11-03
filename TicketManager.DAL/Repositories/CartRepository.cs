@@ -44,6 +44,7 @@ namespace TicketManager.DAL.Repositories
 			var cartToFind = await _context.Carts
 				.Include(x => x.Items)
 				.ThenInclude(x => x.Seat)
+				.ThenInclude(x => x.Row)
 				.FirstOrDefaultAsync(x => x.CartId == id);
 
 			if (cartToFind == null)

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using TicketManager.Common.Interface;
 using TicketManager.Common.Models.Entities;
 using TicketManager.Common.Models.ViewModels;
@@ -17,13 +18,14 @@ namespace TicketManager.IntegrationTest
 		public void Initialize()
 		{
 			_context = IntegrationTestsSetup.SetupDatabase();
-			IRepository<Cart, Guid> _cartRepository = new CartRepository(_context);
-			IRepository<Seat, int> _seatRepository = new SeatRepository(_context);
-			IRepository<Payment, int> _paymentRepository = new PaymentRepository(_context);
+			IRepository<Cart, Guid> cartRepository = new CartRepository(_context);
+			IRepository<Seat, int> seatRepository = new SeatRepository(_context);
+			IRepository<Payment, int> paymentRepository = new PaymentRepository(_context);
+			IMemoryCache memoryCache = new MemoryCache(new MemoryCacheOptions());
 
 			IntegrationTestsSetup.SetupTestData(_context);
 
-			_orderController = new OrderController(_cartRepository, _seatRepository, _paymentRepository, _context);
+			_orderController = new OrderController(cartRepository, seatRepository, paymentRepository, _context, memoryCache);
 		}
 
 		[TestMethod]

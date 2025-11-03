@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using Moq;
 using TicketManager.Common.Enums;
 using TicketManager.Common.Interface;
@@ -13,6 +14,7 @@ namespace TicketManager.Test.Controllers
 	{
 		private Mock<IRepository<Event, int>> _eventRepositoryMock;
 		private Mock<IRepository<Section, int>> _sectionRepositoryMock;
+		private Mock<IMemoryCache> _memoryCacheMock;
 
 		private EventController _eventController;
 
@@ -21,7 +23,9 @@ namespace TicketManager.Test.Controllers
 			_eventRepositoryMock = new Mock<IRepository<Event, int>>();
 			_sectionRepositoryMock = new Mock<IRepository<Section, int>>();
 
-			_eventController = new EventController(_eventRepositoryMock.Object, _sectionRepositoryMock.Object);
+			_memoryCacheMock = new Mock<IMemoryCache>();
+
+			_eventController = new EventController(_eventRepositoryMock.Object, _sectionRepositoryMock.Object, _memoryCacheMock.Object);
 		}
 
 		[TestMethod]
@@ -30,6 +34,8 @@ namespace TicketManager.Test.Controllers
 			var mockedEventList = new List<Event> { new() { DateTime = DateTime.Now, Description = "Test", EventId = 0, Name = "Test0", VenueId = 0 } };
 
 			_eventRepositoryMock.Setup(x => x.GetAsync()).ReturnsAsync(mockedEventList);
+			IList<Event> thingies = new List<Event>();
+			_memoryCacheMock.Setup(x => x.TryGetValue<IList<Event>>(It.IsAny<object>(), out thingies).Returns(false);
 
 			var result = await _eventController.Get() as OkObjectResult;
 

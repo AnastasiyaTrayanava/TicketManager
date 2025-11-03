@@ -29,10 +29,6 @@ namespace TicketManager.DAL
 			Database = base.Database;
 		}
 
-		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-		{
-		}
-
 		public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
 		{
 			return await base.SaveChangesAsync(cancellationToken);

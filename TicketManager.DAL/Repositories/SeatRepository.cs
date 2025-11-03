@@ -40,7 +40,11 @@ namespace TicketManager.DAL.Repositories
 
 		public async Task<Seat> GetByIdAsync(int id)
 		{
-			var seatToFind = await _context.Seats.FindAsync(id);
+			var seatToFind = await _context.Seats
+				.Include(x => x.Row)
+				.ThenInclude(x => x.Section)
+				.Where(x => x.SeatId == id)
+				.FirstOrDefaultAsync();
 
 			if (seatToFind == null)
 			{

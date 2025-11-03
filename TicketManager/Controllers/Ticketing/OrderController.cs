@@ -1,10 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using TicketManager.Common.Enums;
 using TicketManager.Common.Interface;
-using TicketManager.Common.Models;
 using TicketManager.Common.Models.Entities;
 using TicketManager.Common.Models.ViewModels;
-using TicketManager.DAL;
 
 namespace TicketManager.Controllers.Ticketing
 {
@@ -15,13 +14,20 @@ namespace TicketManager.Controllers.Ticketing
 		private IRepository<Seat, int> _seatRepository;
 		private IRepository<Payment, int> _paymentRepository;
 		private IAppDbContext _dbContext;
+		private IMemoryCache _memoryCache;
 
-		public OrderController(IRepository<Cart, Guid> cartRepository, IRepository<Seat, int> seatRepository, IRepository<Payment, int> paymentRepository, IAppDbContext dbContext)
+		public OrderController(
+			IRepository<Cart, Guid> cartRepository,
+			IRepository<Seat, int> seatRepository,
+			IRepository<Payment, int> paymentRepository,
+			IAppDbContext dbContext,
+			IMemoryCache memoryCache)
 		{
 			_cartRepository = cartRepository;
 			_seatRepository = seatRepository;
 			_paymentRepository = paymentRepository;
 			_dbContext = dbContext;
+			_memoryCache = memoryCache;
 		}
 
 		[HttpGet]
@@ -59,6 +65,13 @@ namespace TicketManager.Controllers.Ticketing
 					SeatId = (int)addedCartItem.SeatId
 				});
 				await _cartRepository.UpdateAsync(cart);
+
+				if (addedCartItem.SeatId != null)
+				{
+					var seat = await _seatRepository.GetByIdAsync((int)addedCartItem.SeatId); //change to Cart / CartItem
+					_memoryCache.Remove($"{addedCartItem.EventId}:{seat.Row.SectionId}:seats"); 
+					_memoryCache.Remove("events");
+				}
 
 				return Ok(cart);
 			}
@@ -118,6 +131,12 @@ namespace TicketManager.Controllers.Ticketing
 				}
 
 				var id = await _paymentRepository.CreateAsync(payment);
+
+				foreach (var item in cart.Items)
+				{
+					_memoryCache.Remove($"{item.EventId}:{item.Seat.Row.SectionId}:seats");
+				}
+				_memoryCache.Remove("events");
 
 				await transaction.CommitAsync();
 				return Ok(id);
