@@ -12,7 +12,7 @@ using TicketManager.DAL;
 namespace TicketManager.DAL.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20251101204726_InitialCreate")]
+    [Migration("20251104162114_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -36,7 +36,9 @@ namespace TicketManager.DAL.Migrations
 
                     b.HasKey("CartId");
 
-                    b.HasIndex("PaymentId");
+                    b.HasIndex("PaymentId")
+                        .IsUnique()
+                        .HasFilter("[PaymentId] IS NOT NULL");
 
                     b.ToTable("Carts");
                 });
@@ -78,28 +80,7 @@ namespace TicketManager.DAL.Migrations
                     b.ToTable("CartItem");
                 });
 
-            modelBuilder.Entity("TicketManager.Common.Models.Entities.Payment", b =>
-                {
-                    b.Property<int>("PaymentId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PaymentId"));
-
-                    b.Property<Guid>("CartId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("PaymentStatus")
-                        .HasColumnType("int");
-
-                    b.HasKey("PaymentId");
-
-                    b.HasIndex("CartId");
-
-                    b.ToTable("Payments");
-                });
-
-            modelBuilder.Entity("TicketManager.Common.Models.Event", b =>
+            modelBuilder.Entity("TicketManager.Common.Models.Entities.Event", b =>
                 {
                     b.Property<int>("EventId")
                         .ValueGeneratedOnAdd()
@@ -130,7 +111,26 @@ namespace TicketManager.DAL.Migrations
                     b.ToTable("Events");
                 });
 
-            modelBuilder.Entity("TicketManager.Common.Models.Price", b =>
+            modelBuilder.Entity("TicketManager.Common.Models.Entities.Payment", b =>
+                {
+                    b.Property<int>("PaymentId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PaymentId"));
+
+                    b.Property<Guid>("CartId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("PaymentStatus")
+                        .HasColumnType("int");
+
+                    b.HasKey("PaymentId");
+
+                    b.ToTable("Payments");
+                });
+
+            modelBuilder.Entity("TicketManager.Common.Models.Entities.Price", b =>
                 {
                     b.Property<int>("PriceId")
                         .ValueGeneratedOnAdd()
@@ -154,7 +154,7 @@ namespace TicketManager.DAL.Migrations
                     b.ToTable("Prices");
                 });
 
-            modelBuilder.Entity("TicketManager.Common.Models.Row", b =>
+            modelBuilder.Entity("TicketManager.Common.Models.Entities.Row", b =>
                 {
                     b.Property<int>("RowId")
                         .ValueGeneratedOnAdd()
@@ -172,7 +172,7 @@ namespace TicketManager.DAL.Migrations
                     b.ToTable("Rows");
                 });
 
-            modelBuilder.Entity("TicketManager.Common.Models.Seat", b =>
+            modelBuilder.Entity("TicketManager.Common.Models.Entities.Seat", b =>
                 {
                     b.Property<int>("SeatId")
                         .ValueGeneratedOnAdd()
@@ -196,7 +196,7 @@ namespace TicketManager.DAL.Migrations
                     b.ToTable("Seats");
                 });
 
-            modelBuilder.Entity("TicketManager.Common.Models.Section", b =>
+            modelBuilder.Entity("TicketManager.Common.Models.Entities.Section", b =>
                 {
                     b.Property<int>("SectionId")
                         .ValueGeneratedOnAdd()
@@ -219,7 +219,7 @@ namespace TicketManager.DAL.Migrations
                     b.ToTable("Sections");
                 });
 
-            modelBuilder.Entity("TicketManager.Common.Models.Ticket", b =>
+            modelBuilder.Entity("TicketManager.Common.Models.Entities.Ticket", b =>
                 {
                     b.Property<int>("TicketId")
                         .ValueGeneratedOnAdd()
@@ -262,7 +262,7 @@ namespace TicketManager.DAL.Migrations
                     b.ToTable("Tickets");
                 });
 
-            modelBuilder.Entity("TicketManager.Common.Models.User", b =>
+            modelBuilder.Entity("TicketManager.Common.Models.Entities.User", b =>
                 {
                     b.Property<int>("UserId")
                         .ValueGeneratedOnAdd()
@@ -293,7 +293,7 @@ namespace TicketManager.DAL.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("TicketManager.Common.Models.Venue", b =>
+            modelBuilder.Entity("TicketManager.Common.Models.Entities.Venue", b =>
                 {
                     b.Property<int>("VenueId")
                         .ValueGeneratedOnAdd()
@@ -319,8 +319,8 @@ namespace TicketManager.DAL.Migrations
             modelBuilder.Entity("TicketManager.Common.Models.Entities.Cart", b =>
                 {
                     b.HasOne("TicketManager.Common.Models.Entities.Payment", "Payment")
-                        .WithMany()
-                        .HasForeignKey("PaymentId");
+                        .WithOne("Cart")
+                        .HasForeignKey("TicketManager.Common.Models.Entities.Cart", "PaymentId");
 
                     b.Navigation("Payment");
                 });
@@ -330,25 +330,25 @@ namespace TicketManager.DAL.Migrations
                     b.HasOne("TicketManager.Common.Models.Entities.Cart", "Cart")
                         .WithMany("Items")
                         .HasForeignKey("CartId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("TicketManager.Common.Models.Event", "Event")
+                    b.HasOne("TicketManager.Common.Models.Entities.Event", "Event")
                         .WithMany()
                         .HasForeignKey("EventId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("TicketManager.Common.Models.Price", "Price")
+                    b.HasOne("TicketManager.Common.Models.Entities.Price", "Price")
                         .WithMany()
                         .HasForeignKey("PriceId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("TicketManager.Common.Models.Seat", "Seat")
+                    b.HasOne("TicketManager.Common.Models.Entities.Seat", "Seat")
                         .WithMany()
                         .HasForeignKey("SeatId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Cart");
@@ -360,20 +360,9 @@ namespace TicketManager.DAL.Migrations
                     b.Navigation("Seat");
                 });
 
-            modelBuilder.Entity("TicketManager.Common.Models.Entities.Payment", b =>
+            modelBuilder.Entity("TicketManager.Common.Models.Entities.Event", b =>
                 {
-                    b.HasOne("TicketManager.Common.Models.Entities.Cart", "Cart")
-                        .WithMany()
-                        .HasForeignKey("CartId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Cart");
-                });
-
-            modelBuilder.Entity("TicketManager.Common.Models.Event", b =>
-                {
-                    b.HasOne("TicketManager.Common.Models.Venue", "Venue")
+                    b.HasOne("TicketManager.Common.Models.Entities.Venue", "Venue")
                         .WithMany()
                         .HasForeignKey("VenueId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -382,9 +371,9 @@ namespace TicketManager.DAL.Migrations
                     b.Navigation("Venue");
                 });
 
-            modelBuilder.Entity("TicketManager.Common.Models.Price", b =>
+            modelBuilder.Entity("TicketManager.Common.Models.Entities.Price", b =>
                 {
-                    b.HasOne("TicketManager.Common.Models.Seat", "Seat")
+                    b.HasOne("TicketManager.Common.Models.Entities.Seat", "Seat")
                         .WithMany("Price")
                         .HasForeignKey("SeatId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -393,9 +382,9 @@ namespace TicketManager.DAL.Migrations
                     b.Navigation("Seat");
                 });
 
-            modelBuilder.Entity("TicketManager.Common.Models.Row", b =>
+            modelBuilder.Entity("TicketManager.Common.Models.Entities.Row", b =>
                 {
-                    b.HasOne("TicketManager.Common.Models.Section", "Section")
+                    b.HasOne("TicketManager.Common.Models.Entities.Section", "Section")
                         .WithMany("Rows")
                         .HasForeignKey("SectionId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -404,9 +393,9 @@ namespace TicketManager.DAL.Migrations
                     b.Navigation("Section");
                 });
 
-            modelBuilder.Entity("TicketManager.Common.Models.Seat", b =>
+            modelBuilder.Entity("TicketManager.Common.Models.Entities.Seat", b =>
                 {
-                    b.HasOne("TicketManager.Common.Models.Row", "Row")
+                    b.HasOne("TicketManager.Common.Models.Entities.Row", "Row")
                         .WithMany("Seats")
                         .HasForeignKey("RowId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -415,9 +404,9 @@ namespace TicketManager.DAL.Migrations
                     b.Navigation("Row");
                 });
 
-            modelBuilder.Entity("TicketManager.Common.Models.Section", b =>
+            modelBuilder.Entity("TicketManager.Common.Models.Entities.Section", b =>
                 {
-                    b.HasOne("TicketManager.Common.Models.Venue", "Venue")
+                    b.HasOne("TicketManager.Common.Models.Entities.Venue", "Venue")
                         .WithMany("Sections")
                         .HasForeignKey("VenueId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -426,42 +415,42 @@ namespace TicketManager.DAL.Migrations
                     b.Navigation("Venue");
                 });
 
-            modelBuilder.Entity("TicketManager.Common.Models.Ticket", b =>
+            modelBuilder.Entity("TicketManager.Common.Models.Entities.Ticket", b =>
                 {
-                    b.HasOne("TicketManager.Common.Models.Event", "Event")
+                    b.HasOne("TicketManager.Common.Models.Entities.Event", "Event")
                         .WithMany()
                         .HasForeignKey("EventId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("TicketManager.Common.Models.Row", "Row")
+                    b.HasOne("TicketManager.Common.Models.Entities.Row", "Row")
                         .WithMany()
                         .HasForeignKey("RowId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("TicketManager.Common.Models.Seat", "Seat")
+                    b.HasOne("TicketManager.Common.Models.Entities.Seat", "Seat")
                         .WithMany()
                         .HasForeignKey("SeatId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("TicketManager.Common.Models.Section", "Section")
+                    b.HasOne("TicketManager.Common.Models.Entities.Section", "Section")
                         .WithMany()
                         .HasForeignKey("SectionId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("TicketManager.Common.Models.User", "User")
+                    b.HasOne("TicketManager.Common.Models.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("TicketManager.Common.Models.Venue", "Venue")
+                    b.HasOne("TicketManager.Common.Models.Entities.Venue", "Venue")
                         .WithMany()
                         .HasForeignKey("VenueId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Event");
@@ -482,22 +471,28 @@ namespace TicketManager.DAL.Migrations
                     b.Navigation("Items");
                 });
 
-            modelBuilder.Entity("TicketManager.Common.Models.Row", b =>
+            modelBuilder.Entity("TicketManager.Common.Models.Entities.Payment", b =>
+                {
+                    b.Navigation("Cart")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("TicketManager.Common.Models.Entities.Row", b =>
                 {
                     b.Navigation("Seats");
                 });
 
-            modelBuilder.Entity("TicketManager.Common.Models.Seat", b =>
+            modelBuilder.Entity("TicketManager.Common.Models.Entities.Seat", b =>
                 {
                     b.Navigation("Price");
                 });
 
-            modelBuilder.Entity("TicketManager.Common.Models.Section", b =>
+            modelBuilder.Entity("TicketManager.Common.Models.Entities.Section", b =>
                 {
                     b.Navigation("Rows");
                 });
 
-            modelBuilder.Entity("TicketManager.Common.Models.Venue", b =>
+            modelBuilder.Entity("TicketManager.Common.Models.Entities.Venue", b =>
                 {
                     b.Navigation("Sections");
                 });

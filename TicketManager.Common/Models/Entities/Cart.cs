@@ -17,6 +17,6 @@ namespace TicketManager.Common.Models.Entities
 		public Payment? Payment { get; set; }
 
 		[NotMapped]
-		public float TotalPrice => Items.Select(x => x.Price.PriceValue).Sum();
+		public float TotalPrice { get; set; }
 	}
 }

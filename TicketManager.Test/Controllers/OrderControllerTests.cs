@@ -79,13 +79,26 @@ namespace TicketManager.Test.Controllers
 				CartId = cartGuid,
 				Items =
 				[
-					new() { CartItemId = 0, EventId = 1, PriceId = 2, SeatId = 3 }
+					new() { CartItemId = 0, EventId = 1, PriceId = 2, SeatId = 3, Seat = new Seat()
+					{
+						SeatId = 5,
+						Row = new Row()
+						{
+							SectionId = 5
+						}
+					}}
 				]
+			};
+
+			var cartItemToAdd = new CartItemViewModel()
+			{
+				EventId = 1, PriceId = 2, SeatId = 4,
+				Seat = new Seat() { RowId = 5, SeatId = 4, Row = new Row() { SectionId = 5 } }
 			};
 
 			_cartRepositoryMock.Setup(x => x.GetByIdAsync(cartGuid)).ReturnsAsync(cartItem);
 
-			var result = await _orderController.AddToCart(cartGuid, new CartItemViewModel() {EventId = 1, PriceId = 2, SeatId = 4}) as OkObjectResult;
+			var result = await _orderController.AddToCart(cartGuid, cartItemToAdd) as OkObjectResult;
 
 			Assert.IsNotNull(result);
 			Assert.AreEqual(200, result.StatusCode);
@@ -163,7 +176,12 @@ namespace TicketManager.Test.Controllers
 							RowId = 0,
 							SeatId = 3,
 							SeatNumber = 3,
-							SeatState = SeatState.Available
+							SeatState = SeatState.Available,
+							Row = new Row()
+							{
+								RowId = 0,
+								SectionId = 0
+							}
 						}
 					},
 					new()
@@ -177,7 +195,12 @@ namespace TicketManager.Test.Controllers
 							RowId = 0,
 							SeatId = 4,
 							SeatNumber = 4,
-							SeatState = SeatState.Available
+							SeatState = SeatState.Available,
+							Row = new Row()
+							{
+								RowId = 0,
+								SectionId = 0
+							}
 						}
 					}
 				]

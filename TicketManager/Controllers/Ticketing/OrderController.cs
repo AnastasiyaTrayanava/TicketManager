@@ -62,15 +62,16 @@ namespace TicketManager.Controllers.Ticketing
 				{
 					EventId = (int)addedCartItem.EventId,
 					PriceId = (int)addedCartItem.PriceId,
-					SeatId = (int)addedCartItem.SeatId
+					SeatId = (int)addedCartItem.SeatId,
+					Event = addedCartItem.Event,
+					Price = addedCartItem.Price,
+					Seat = addedCartItem.Seat
 				});
 				await _cartRepository.UpdateAsync(cart);
 
 				if (addedCartItem.SeatId != null)
 				{
-					//change to Cart / CartItem
-					var seat = await _seatRepository.GetByIdAsync((int)addedCartItem.SeatId);
-					_memoryCache.Remove($"{addedCartItem.EventId}:{seat.Row.SectionId}:seats"); 
+					_memoryCache.Remove($"{addedCartItem.EventId}:{addedCartItem.Seat.Row.SectionId}:seats");
 					_memoryCache.Remove("events");
 				}
 

@@ -8,6 +8,7 @@ namespace TicketManager.Common.Models.Entities
 		[Key]
 		[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
 		public int RowId { get; set; }
+		public int RowNumber { get; set; }
 		
 		public List<Seat> Seats { get; set; }
 		

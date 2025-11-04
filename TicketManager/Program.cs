@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json.Serialization;
 using TicketManager.Common.Interface;
 using TicketManager.Common.Models.Entities;
 using TicketManager.DAL;
@@ -24,6 +25,16 @@ builder.Services.AddScoped<IAppDbContext, AppDbContext>();
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+builder.Services.AddResponseCaching();
+builder.Services.AddSwaggerGen();
+
+builder.Services.AddControllers()
+	.AddJsonOptions(options =>
+	{
+		options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
+		options.JsonSerializerOptions.MaxDepth = 0;
+	});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -41,10 +52,17 @@ app.UseAuthorization();
 
 app.MapStaticAssets();
 
+app.UseResponseCaching();
+
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
 
+if (app.Environment.IsDevelopment())
+{
+	app.UseSwagger();
+	app.UseSwaggerUI();
+}
 
 app.Run();
