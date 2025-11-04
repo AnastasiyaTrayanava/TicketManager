@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json.Serialization;
 using TicketManager.Common.Interface;
 using TicketManager.Common.Models.Entities;
 using TicketManager.DAL;
@@ -6,7 +7,8 @@ using TicketManager.DAL.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("SqlServerConnectionString")));
+var connectionString = builder.Configuration["SqlServerConnectionString"];
+builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connectionString));
 builder.Services.AddOptions();
 
 builder.Services.AddScoped<IRepository<Cart, Guid>, CartRepository>();
@@ -24,6 +26,13 @@ builder.Services.AddScoped<IAppDbContext, AppDbContext>();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddControllers()
+	.AddJsonOptions(options =>
+	{
+		options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
+		options.JsonSerializerOptions.MaxDepth = 0;
+	});
 
 var app = builder.Build();
 
@@ -49,3 +58,5 @@ app.MapControllerRoute(
 
 
 app.Run();
+
+public partial class Program { }
