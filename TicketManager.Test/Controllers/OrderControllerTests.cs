@@ -19,7 +19,7 @@ namespace TicketManager.Test.Controllers
 		private Mock<IRepository<Seat, int>> _seatRepositoryMock;
 		private Mock<IRepository<Payment, int>> _paymentRepositoryMock;
 		private Mock<AppDbContext> _dbContextMock;
-		private Mock<IMemoryCache> _memoryCacheMock;
+		private IMemoryCache _memoryCache;
 
 		private OrderController _orderController;
 
@@ -30,10 +30,10 @@ namespace TicketManager.Test.Controllers
 			_paymentRepositoryMock = new Mock<IRepository<Payment, int>>();
 
 			_dbContextMock = new Mock<AppDbContext>();
-			_memoryCacheMock = new Mock<IMemoryCache>();
+			_memoryCache = new MemoryCache(new MemoryCacheOptions());
 
 			_orderController = new OrderController(_cartRepositoryMock.Object, _seatRepositoryMock.Object,
-				_paymentRepositoryMock.Object, _dbContextMock.Object, _memoryCacheMock.Object);
+				_paymentRepositoryMock.Object, _dbContextMock.Object, _memoryCache);
 		}
 
 		[TestMethod]

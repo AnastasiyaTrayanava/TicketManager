@@ -14,7 +14,7 @@ namespace TicketManager.Test.Controllers
 	{
 		private Mock<IRepository<Event, int>> _eventRepositoryMock;
 		private Mock<IRepository<Section, int>> _sectionRepositoryMock;
-		private Mock<IMemoryCache> _memoryCacheMock;
+		private IMemoryCache _memoryCache;
 
 		private EventController _eventController;
 
@@ -23,9 +23,9 @@ namespace TicketManager.Test.Controllers
 			_eventRepositoryMock = new Mock<IRepository<Event, int>>();
 			_sectionRepositoryMock = new Mock<IRepository<Section, int>>();
 
-			_memoryCacheMock = new Mock<IMemoryCache>();
+			_memoryCache = new MemoryCache(new MemoryCacheOptions());
 
-			_eventController = new EventController(_eventRepositoryMock.Object, _sectionRepositoryMock.Object, _memoryCacheMock.Object);
+			_eventController = new EventController(_eventRepositoryMock.Object, _sectionRepositoryMock.Object, _memoryCache);
 		}
 
 		[TestMethod]
@@ -34,7 +34,6 @@ namespace TicketManager.Test.Controllers
 			var mockedEventList = new List<Event> { new() { DateTime = DateTime.Now, Description = "Test", EventId = 0, Name = "Test0", VenueId = 0 } };
 
 			_eventRepositoryMock.Setup(x => x.GetAsync()).ReturnsAsync(mockedEventList);
-			IList<Event> thingies = new List<Event>();
 
 			var result = await _eventController.Get() as OkObjectResult;
 

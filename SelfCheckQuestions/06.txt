@@ -1,0 +1,27 @@
+1. How ASP.NET API handles multiple requests?
+If we assume that the multiple requests come from different users or session, ASP.NET application uses a new thread to execute multiple requests. This is applicable to both single-threaded, async or multithreaded applications. Essentially for multiple users the requests will be running in parallel.
+
+2. What are the benefits and downsides of caching? When should we consider applying caching?
+Pros:
++ increased performance
++ less load on the server
+Cons:
++ consumes memory
++ if implemented incorrectly may lead to issues with displaying old/outdated data
++ may become too complex and unmanageable
+
+3. What are the differences between In-memory, Distributed or Request caching options?
+In-memory cache stores data in RAM, distributed uses outside resources to store data (like DB), while request cache is similar to in-memory but it stores an entire http request rather than just data it returns.
+
+4. What does ‘session affinity’ and ‘thread affinity’ mean? When do we have to consider session affinity?
+Session affinity is a load balancing technique when a load balancer sends all requests form a particular end user to a specific endpoint. Thread affinity is similar in idea but it assigns a thread to a specific core, thread/pool. Session affinity is to be considered when user has their data processed and displayed on a particular server and needs to keep being processed there for a consistency sake. 
+
+5. What are the race conditions and deadlocks? Do they possible in a single threaded application?
+Race condition is a defect when the work of multiple threads is solely dependent on the sequence or timing of the work of multiple threads. Deadlock is a state when two threads are blocking each other by awaiting for each other's work result and are unable to proceed due to that. I assume both can happen if an application shares resources with another one.
+
+6. Why is it not safe to use static constructors/fields when your code is running in a multithreaded application?
+I assume since those exist in a single instance, there may be race conditions happening to the fields and deadlocks happening to the constructors.
+
+7. What  objects and features .NET proposes to solve race conditions and deadlocks?
+One of the most common ways to prevent race conditions and deadlocks is the use of lock keyword, which locks the object that gets accessed.
+Usage of Tasks may also ease the problem, as it has multiple methods to use to "wait" on something (e.g. Task.WhenAll)
