@@ -33,5 +33,16 @@ namespace TicketManager.DAL
 		{
 			return await base.SaveChangesAsync(cancellationToken);
 		}
+
+		protected override void OnModelCreating(ModelBuilder modelBuilder)
+		{
+			modelBuilder.Entity<Cart>()
+				.HasMany(c => c.Items)
+				.WithOne(i => i.Cart)
+				.HasForeignKey(i => i.CartId)
+				.OnDelete(DeleteBehavior.Cascade);
+
+			base.OnModelCreating(modelBuilder);
+		}
 	}
 }

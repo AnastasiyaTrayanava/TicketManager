@@ -64,7 +64,17 @@ namespace TicketManager.IntegrationTest
 			{
 				EventId = 1,
 				PriceId = 37,
-				SeatId = 10
+				SeatId = 10,
+				Seat = new Seat()
+				{
+					SeatId = 10,
+					RowId = 2,
+					Row = new Row()
+					{
+						RowId = 2,
+						SectionId = 1
+					}
+				}
 			};
 			var content = new StringContent(JsonSerializer.Serialize(cartItemViewModel), Encoding.UTF8, "application/json");
 
@@ -83,7 +93,17 @@ namespace TicketManager.IntegrationTest
 			{
 				EventId = 1,
 				PriceId = 37,
-				SeatId = 10
+				SeatId = 10,
+				Seat = new Seat()
+				{
+					SeatId = 10,
+					RowId = 2,
+					Row = new Row()
+					{
+						RowId = 2,
+						SectionId = 1
+					}
+				}
 			};
 			var content = new StringContent(JsonSerializer.Serialize(cartItemViewModel), Encoding.UTF8, "application/json");
 
