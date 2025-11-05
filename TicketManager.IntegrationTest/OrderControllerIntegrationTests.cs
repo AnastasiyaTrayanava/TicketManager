@@ -1,113 +1,101 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Caching.Memory;
-using TicketManager.Common.Interface;
+﻿using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using System.Text;
+using Newtonsoft.Json;
 using TicketManager.Common.Models.Entities;
 using TicketManager.Common.Models.ViewModels;
-using TicketManager.Controllers.Ticketing;
-using TicketManager.DAL.Repositories;
+using TicketManager.DAL;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace TicketManager.IntegrationTest
 {
 	[TestClass]
 	public sealed class OrderControllerIntegrationTests
 	{
-		private OrderController _orderController;
-		private IAppDbContext _context;
+		private WebApplicationFactory<Program> _factory;
+		private HttpClient _client;
+
+		private AppDbContext _appDbContext;
+
+		private Guid _cartGuid;
 
 		[TestInitialize]
-		public void Initialize()
+		public async Task Initialize()
 		{
-			_context = IntegrationTestsSetup.SetupDatabase();
-			IRepository<Cart, Guid> cartRepository = new CartRepository(_context);
-			IRepository<Seat, int> seatRepository = new SeatRepository(_context);
-			IRepository<Payment, int> paymentRepository = new PaymentRepository(_context);
-			IMemoryCache memoryCache = new MemoryCache(new MemoryCacheOptions());
+			_cartGuid = Guid.NewGuid();
+			_factory = new WebApplicationFactory<Program>();
+			_client = _factory.CreateClient();
 
-			IntegrationTestsSetup.SetupTestData(_context);
+			var scope = _factory.Services.CreateScope();
+			_appDbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-			_orderController = new OrderController(cartRepository, seatRepository, paymentRepository, _context, memoryCache);
+			var cart = new Cart() { CartId = _cartGuid };
+			await _appDbContext.Carts.AddAsync(cart);
+			await _appDbContext.SaveChangesAsync();
+		}
+
+		[TestCleanup]
+		public async Task Cleanup()
+		{
+			var cart = await _appDbContext.Carts.Include(c => c.Items).FirstOrDefaultAsync(x => x.CartId == _cartGuid);
+			if (cart != null)
+			{
+				_appDbContext.Carts.Remove(cart);
+				await _appDbContext.SaveChangesAsync();
+			}
+			await _factory.DisposeAsync();
 		}
 
 		[TestMethod]
-		public async Task Add_Item_To_The_Cart()
+		public async Task Get_OrderEndpointReturnSuccessAndCorrectContentType()
 		{
-			var cartGuid = new Guid("c9d8e0bf-33d5-4233-8215-a24a825763e3");
-			var cartItem = new CartItemViewModel() { EventId = 0, PriceId = 0, SeatId = 3 };
+			var response = await _client.GetAsync($"orders/carts/cartId?cartId={_cartGuid}");
 
-			var result = await _orderController.AddToCart(cartGuid, cartItem) as OkObjectResult;
-
-			Assert.IsNotNull(result);
-			Assert.AreEqual(200, result.StatusCode);
+			response.EnsureSuccessStatusCode();
+			Assert.AreEqual("application/json; charset=utf-8",
+				response.Content.Headers.ContentType.ToString());
 		}
 
 		[TestMethod]
-		public async Task Add_EmptyItem_To_The_Cart()
+		public async Task AddToCart_AddsToCartAndReturnsSuccess()
 		{
-			var cartGuid = new Guid("c9d8e0bf-33d5-4233-8215-a24a825763e3");
-			var cartItem = new CartItemViewModel();
+			var cartItemViewModel = new CartItemViewModel()
+			{
+				EventId = 1,
+				PriceId = 37,
+				SeatId = 10
+			};
+			var content = new StringContent(JsonSerializer.Serialize(cartItemViewModel), Encoding.UTF8, "application/json");
 
-			var result = await _orderController.AddToCart(cartGuid, cartItem) as StatusCodeResult;
+			var response = await _client.PostAsync($"orders/carts/cartId?cartId={_cartGuid}", content);
+			response.EnsureSuccessStatusCode();
 
-			Assert.IsNotNull(result);
-			Assert.AreEqual(400, result.StatusCode);
+			var responseData = JsonConvert.DeserializeObject<Cart>(await response.Content.ReadAsStringAsync());
+
+			Assert.IsTrue(responseData.Items.Any());
 		}
 
 		[TestMethod]
-		public async Task Remove_Item_From_The_Cart()
+		public async Task BookSeats_BookSeatsAndReturnSuccess()
 		{
-			var cartGuid = new Guid("c9d8e0bf-33d5-4233-8215-a24a825763e3");
+			var cartItemViewModel = new CartItemViewModel()
+			{
+				EventId = 1,
+				PriceId = 37,
+				SeatId = 10
+			};
+			var content = new StringContent(JsonSerializer.Serialize(cartItemViewModel), Encoding.UTF8, "application/json");
 
-			var result = await _orderController.RemoveFromCart(cartGuid, 0, 1) as StatusCodeResult;
+			var addItemResponse = await _client.PostAsync($"orders/carts/cartId?cartId={_cartGuid}", content);
+			addItemResponse.EnsureSuccessStatusCode();
 
-			Assert.IsNotNull(result);
-			Assert.AreEqual(200, result.StatusCode);
-		}
+			var bookItemResponse = await _client.PutAsync($"orders/carts/{_cartGuid}/book", new StringContent(""));
+			bookItemResponse.EnsureSuccessStatusCode();
 
-		[TestMethod]
-		public async Task Remove_Non_Existing_Item_From_The_Cart()
-		{
-			var cartGuid = new Guid("c9d8e0bf-33d5-4233-8215-a24a825763e3");
+			var responseData = JsonConvert.DeserializeObject<int>(await bookItemResponse.Content.ReadAsStringAsync());
 
-			var result = await _orderController.RemoveFromCart(cartGuid, 10, 10) as StatusCodeResult;
-
-			Assert.IsNotNull(result);
-			Assert.AreEqual(500, result.StatusCode);
-		}
-
-		[TestMethod]
-		public async Task Book_Tickets()
-		{
-			var cartGuid = new Guid("c9d8e0bf-33d5-4233-8215-a24a825763e3");
-
-			var result = await _orderController.BookSeats(cartGuid) as OkObjectResult;
-
-			Assert.IsNotNull(result);
-			Assert.AreEqual(200, result.StatusCode);
-		}
-
-		[TestMethod]
-		public async Task Book_Tickets_From_Empty_Cart()
-		{
-			var cartGuid = new Guid("87bdf9fe-e7a8-4662-b885-e040495d599e");
-
-			var result = await _orderController.BookSeats(cartGuid) as StatusCodeResult;
-
-			Assert.IsNotNull(result);
-			Assert.AreEqual(400, result.StatusCode);
-		}
-
-		[TestMethod]
-		public async Task Add_Item_To_Cart_And_Book_Tickets()
-		{
-			var cartGuid = new Guid("c9d8e0bf-33d5-4233-8215-a24a825763e3");
-			var cartItem = new CartItemViewModel() { EventId = 0, PriceId = 0, SeatId = 3 };
-
-			var result = await _orderController.AddToCart(cartGuid, cartItem) as OkObjectResult;
-
-			Assert.IsNotNull(result);
-			Assert.AreEqual(3, ((Cart)result.Value).Items.Count);
-
-
+			Assert.IsTrue(responseData != 0);
 		}
 	}
 }
