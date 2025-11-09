@@ -1,0 +1,10 @@
+1. What are the differences between performance, load, and stress testing?
+Performance testing is a type of testing that is used to measure common execution time for separate requests using various conditions.
+Load testing allows to see how system behaves under expected user loads and measure its ability to handle a specific amount of traffic.
+Stress testing helps to evaluate how system behaves under unexpected and extreme load conditions. It also helps to identify any issues with the system and if it's able to restore itself from the failure.
+
+2. When would you prefer vertical scaling over horizontal?
+For modern systems horizontal scaling is preferable, since it allows several instances to kick in and distribute traffic among them. Vertical scaling is used for systems that don't allow easy instance-addition, or if the same instance has low performance and execution of a requests requires more computational power.
+
+3. Does ASP.NET Core API support horizontal scaling? Explain your answer.
+Horizontal scaling is appliable to the machines that handle the API application, rather than the application itself. It is possible to set load balancing and traffic redirection based on various metrics (e.g. region). This scaling adds new instances of the same application to ensure 100% availability of the resources.

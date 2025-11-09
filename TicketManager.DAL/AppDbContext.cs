@@ -42,6 +42,10 @@ namespace TicketManager.DAL
 				.HasForeignKey(i => i.CartId)
 				.OnDelete(DeleteBehavior.Cascade);
 
+			modelBuilder.Entity<Seat>()
+				.Property(p => p.Version)
+				.IsConcurrencyToken();
+
 			base.OnModelCreating(modelBuilder);
 		}
 	}

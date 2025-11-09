@@ -1,5 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
+using System.Data;
 using TicketManager.Common.Enums;
 using TicketManager.Common.Interface;
 using TicketManager.Common.Models.Entities;
@@ -115,7 +118,7 @@ namespace TicketManager.Controllers.Ticketing
 				var cart = await _cartRepository.GetByIdAsync(cartId);
 				var seats = cart.Items.Select(x => x.Seat);
 
-				if (!seats.Any())
+				if (!seats.Any() || seats.Any(x => x.SeatState == SeatState.Reserved || x.SeatState == SeatState.Sold))
 				{
 					return BadRequest();
 				}
@@ -146,6 +149,105 @@ namespace TicketManager.Controllers.Ticketing
 			catch (Exception e)
 			{
 				await transaction.RollbackAsync();
+				Console.WriteLine(e);
+				return StatusCode(500);
+			}
+		}
+
+		[HttpPut]
+		[Route("{cartId}/book-optimistic")]
+		public async Task<IActionResult> BookSeatsOptimistic(Guid cartId)
+		{
+			var transaction = await _dbContext.Database.BeginTransactionAsync();
+
+			try
+			{
+				var cart = await _cartRepository.GetByIdAsync(cartId);
+				var seats = cart.Items.Select(x => x.Seat);
+
+				if (!seats.Any() || seats.Any(x => x.SeatState == SeatState.Reserved || x.SeatState == SeatState.Sold))
+				{
+					return BadRequest();
+				}
+
+				var payment = new Payment()
+				{
+					CartId = cart.CartId,
+					PaymentStatus = PaymentStatus.Pending
+				};
+
+				foreach (var seat in seats)
+				{
+					seat.SeatState = SeatState.Reserved;
+					await _seatRepository.UpdateAsync(seat);
+				}
+
+				var id = await _paymentRepository.CreateAsync(payment);
+
+				foreach (var item in cart.Items)
+				{
+					_memoryCache.Remove($"{item.EventId}:{item.Seat.Row.SectionId}:seats");
+				}
+				_memoryCache.Remove("events");
+
+				await transaction.CommitAsync();
+				return Ok(id);
+			}
+			catch (DbUpdateConcurrencyException ex)
+			{
+				Console.WriteLine(ex);
+				return Conflict("Resource was already modified. Please retry");
+			}
+			catch (Exception e)
+			{
+				await transaction.RollbackAsync();
+				Console.WriteLine(e);
+				return StatusCode(500);
+			}
+		}
+
+		[HttpPut]
+		[Route("{cartId}/book-pessimistic")]
+		public async Task<IActionResult> BookSeatsPessimistic(Guid cartId, CancellationToken token)
+		{
+			var transaction = await _dbContext.Database.BeginTransactionAsync(IsolationLevel.Serializable, token);
+
+			try
+			{
+				var cart = await _cartRepository.GetByIdAsync(cartId);
+				var seats = cart.Items.Select(x => x.Seat);
+
+				if (!seats.Any() || seats.Any(x => x.SeatState == SeatState.Reserved || x.SeatState == SeatState.Sold))
+				{
+					return BadRequest();
+				}
+
+				var payment = new Payment()
+				{
+					CartId = cart.CartId,
+					PaymentStatus = PaymentStatus.Pending
+				};
+
+				foreach (var seat in seats)
+				{
+					seat.SeatState = SeatState.Reserved;
+					await _seatRepository.UpdateAsync(seat);
+				}
+
+				var id = await _paymentRepository.CreateAsync(payment);
+
+				foreach (var item in cart.Items)
+				{
+					_memoryCache.Remove($"{item.EventId}:{item.Seat.Row.SectionId}:seats");
+				}
+				_memoryCache.Remove("events");
+
+				await transaction.CommitAsync(token);
+				return Ok(id);
+			}
+			catch (Exception e)
+			{
+				await transaction.RollbackAsync(token);
 				Console.WriteLine(e);
 				return StatusCode(500);
 			}

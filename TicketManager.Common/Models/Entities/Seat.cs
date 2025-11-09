@@ -15,10 +15,13 @@ namespace TicketManager.Common.Models.Entities
 		public List<Price> Price { get; set; }
 		
 		public int RowId { get; set; }
-		
+
 		public SeatState SeatState { get; set; }
 
 		[ForeignKey("RowId")]
 		public Row Row { get; set; }
+
+		[ConcurrencyCheck]
+		public long Version { get; set; }
 	}
 }
