@@ -111,7 +111,7 @@ namespace TicketManager.Controllers.Ticketing
 		[Route("{cartId}/book")]
 		public async Task<IActionResult> BookSeats(Guid cartId)
 		{
-			var transaction = await _dbContext.Database.BeginTransactionAsync();
+			await using var transaction = await _dbContext.Database.BeginTransactionAsync();
 
 			try
 			{
@@ -120,6 +120,7 @@ namespace TicketManager.Controllers.Ticketing
 
 				if (!seats.Any() || seats.Any(x => x.SeatState == SeatState.Reserved || x.SeatState == SeatState.Sold))
 				{
+					await transaction.RollbackAsync();
 					return BadRequest();
 				}
 
@@ -158,7 +159,7 @@ namespace TicketManager.Controllers.Ticketing
 		[Route("{cartId}/book-optimistic")]
 		public async Task<IActionResult> BookSeatsOptimistic(Guid cartId)
 		{
-			var transaction = await _dbContext.Database.BeginTransactionAsync();
+			await using var transaction = await _dbContext.Database.BeginTransactionAsync();
 
 			try
 			{
@@ -167,6 +168,7 @@ namespace TicketManager.Controllers.Ticketing
 
 				if (!seats.Any() || seats.Any(x => x.SeatState == SeatState.Reserved || x.SeatState == SeatState.Sold))
 				{
+					await transaction.RollbackAsync();
 					return BadRequest();
 				}
 
@@ -195,6 +197,7 @@ namespace TicketManager.Controllers.Ticketing
 			}
 			catch (DbUpdateConcurrencyException ex)
 			{
+				await transaction.RollbackAsync();
 				Console.WriteLine(ex);
 				return Conflict("Resource was already modified. Please retry");
 			}
@@ -210,7 +213,7 @@ namespace TicketManager.Controllers.Ticketing
 		[Route("{cartId}/book-pessimistic")]
 		public async Task<IActionResult> BookSeatsPessimistic(Guid cartId, CancellationToken token)
 		{
-			var transaction = await _dbContext.Database.BeginTransactionAsync(IsolationLevel.Serializable, token);
+			await using var transaction = await _dbContext.Database.BeginTransactionAsync(IsolationLevel.Serializable, token);
 
 			try
 			{
@@ -219,6 +222,7 @@ namespace TicketManager.Controllers.Ticketing
 
 				if (!seats.Any() || seats.Any(x => x.SeatState == SeatState.Reserved || x.SeatState == SeatState.Sold))
 				{
+					await transaction.RollbackAsync(token);
 					return BadRequest();
 				}
 
