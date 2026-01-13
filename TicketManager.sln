@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.14.36221.1
+# Visual Studio Version 18
+VisualStudioVersion = 18.1.11312.151 d18.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TicketManager", "TicketManager\TicketManager.csproj", "{74FAB266-BCB9-46E1-BB89-C2175A230F5E}"
 EndProject
@@ -12,6 +12,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TicketManager.Test", "TicketManager.Test\TicketManager.Test.csproj", "{5A2D46C7-C004-4DA4-A0BC-7648328F8238}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TicketManager.IntegrationTest", "TicketManager.IntegrationTest\TicketManager.IntegrationTest.csproj", "{101C3722-E405-41F3-BB36-105CCB6D1D44}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NotificationHandler", "NotificationHandler\NotificationHandler.csproj", "{86BF11B4-3022-485E-846A-A499616C9DF1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{101C3722-E405-41F3-BB36-105CCB6D1D44}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{101C3722-E405-41F3-BB36-105CCB6D1D44}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{101C3722-E405-41F3-BB36-105CCB6D1D44}.Release|Any CPU.Build.0 = Release|Any CPU
+		{86BF11B4-3022-485E-846A-A499616C9DF1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{86BF11B4-3022-485E-846A-A499616C9DF1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{86BF11B4-3022-485E-846A-A499616C9DF1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{86BF11B4-3022-485E-846A-A499616C9DF1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

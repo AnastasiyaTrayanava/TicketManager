@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using TicketManager.Common.Interface;
+using TicketManager.Common.Models;
 using TicketManager.Common.Models.Entities;
 
 namespace TicketManager.DAL
@@ -17,6 +18,7 @@ namespace TicketManager.DAL
 		public virtual DbSet<Ticket> Tickets { get; set; }
 		public virtual DbSet<Payment> Payments { get; set; }
 		public virtual DbSet<Cart> Carts { get; set; }
+		public virtual DbSet<Notification> Notifications { get; set; }
 		public virtual DatabaseFacade Database { get; set; }
 
 		public AppDbContext()

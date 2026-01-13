@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using TicketManager.Common.Models;
 using TicketManager.Common.Models.Entities;
 
 namespace TicketManager.Common.Interface
@@ -16,6 +17,7 @@ namespace TicketManager.Common.Interface
 		public DbSet<Ticket> Tickets { get; set; }
 		public DbSet<Payment> Payments { get; set; }
 		public DbSet<Cart> Carts { get; set; }
+		public DbSet<Notification> Notifications { get; set; }
 		public DatabaseFacade Database { get; set; }
 
 		public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);

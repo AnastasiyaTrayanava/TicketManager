@@ -14,13 +14,20 @@ namespace TicketManager.Controllers.Ticketing
 		private IRepository<Cart, Guid> _cartRepository;
 		private IRepository<Seat, int> _seatRepository;
 		private IAppDbContext _dbContext;
+		private INotificationService _notificationService;
 
-		public PaymentController(IRepository<Payment, int> paymentRepository, IRepository<Cart, Guid> cartRepository, IRepository<Seat, int> seatRepository, IAppDbContext dbContext)
+		public PaymentController(
+			IRepository<Payment, int> paymentRepository,
+			IRepository<Cart, Guid> cartRepository,
+			IRepository<Seat, int> seatRepository,
+			IAppDbContext dbContext,
+			INotificationService notificationService)
 		{
 			_paymentRepository = paymentRepository;
 			_cartRepository = cartRepository;
 			_seatRepository = seatRepository;
 			_dbContext = dbContext;
+			_notificationService = notificationService;
 		}
 
 		[HttpGet]

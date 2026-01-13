@@ -1,11 +1,27 @@
 using Microsoft.EntityFrameworkCore;
+using RabbitMQ.Client;
 using System.Text.Json.Serialization;
 using TicketManager.Common.Interface;
+using TicketManager.Common.Models;
 using TicketManager.Common.Models.Entities;
 using TicketManager.DAL;
 using TicketManager.DAL.Repositories;
+using TicketManager.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// RabbitMQ
+builder.Services.AddSingleton<IConnection>(x =>
+{
+	var factory = new ConnectionFactory { HostName = "localhost" };
+	return factory.CreateConnectionAsync().GetAwaiter().GetResult();
+});
+
+builder.Services.AddScoped<IChannel>(x =>
+{
+	var connection = x.GetRequiredService<IConnection>();
+	return connection.CreateChannelAsync().GetAwaiter().GetResult();
+});
 
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(builder.Configuration["SqlServerConnectionString"]));
 builder.Services.AddOptions();
@@ -19,8 +35,11 @@ builder.Services.AddScoped<IRepository<Seat, int>, SeatRepository>();
 builder.Services.AddScoped<IRepository<Section, int>, SectionRepository>();
 builder.Services.AddScoped<IRepository<User, int>, UserRepository>();
 builder.Services.AddScoped<IRepository<Venue, int>, VenueRepository>();
+builder.Services.AddScoped<IRepository<Notification, Guid>, NotificationRepository>();
 
 builder.Services.AddScoped<IAppDbContext, AppDbContext>();
+
+builder.Services.AddScoped<INotificationService, NotificationService>();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
