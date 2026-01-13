@@ -1,0 +1,21 @@
+1. What is a message queue? What do message queues store and transfer? 
+Message queue is a channel that supports and handles communication between different services by message distribution via FIFO model. Message queues stores messages (e.g. event triggers, notifications, etc.) which may contain certain data for a future transfer.
+
+2. Describe the publisher/subscriber pattern. The difference between Pub/Sub and Observable patterns.
+Pub/Sub is a pattern that allows certain devices server as a mean to send the message (publisher) and the others to receive it (subscriber). It uses a middleware service for async communication.
+The main difference between observable and pub/sub is that observable usually implemented synchronously while pub/sub uses asynchronous means. Observable is also aware of its subscribers, pub/sub is not as it uses an intermediary service.
+
+3. What is a Message Bus? How does it work? 
+Message bus is an infrastructure that allows communications between various systems using a shared source. It usually contains several "channels" - topics for publisher to post to and for subscribers to listen to. Usually a certain system would use a topic to post a message there without knowing who would receive it. Then the message will be read by another service.
+
+4. What is the difference between message queue and web services? 
+Message queue uses messaging, or publisher/subscriber patter. Web services use primarily API (REST) communication.
+Message queue allows persisting of messages. Web services may lose whatever is sent to them.
+Message queues are async at a protocol level.
+
+5. Describe the difference between RabbitMQ and Kafka. Provide some use cases for each of them: in which scenarios you’ll use RabbitMQ, Kafka?
+Kafka is a log-based streaming platform, RabbitMQ is a queuing system that allows subscribers to receive publisher messages.
+Kafka is optimized to handle millions of messages, while RabbitMQ is for a smaller amount of messages.
+Kafka retains messages, RabbitMQ consumes and removes them.
+Generally RabbitMQ should me used as a message queue for smaller tasks like notifications, job queues, payment processing, email sending workers, events between microservices.
+While Kafka is great for bigger streams of data like user activity tracking, logging, real-time analytics, etc.
