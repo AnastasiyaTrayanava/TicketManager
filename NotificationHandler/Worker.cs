@@ -3,11 +3,12 @@ using NotificationHandler.Interfaces;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System.Text;
+using TicketManager.Common.Interface;
 using TicketManager.Common.Models;
 
 namespace NotificationHandler
 {
-	public class Worker(ILogger<Worker> logger, IChannel channel, INotificationProvider notificationProvider) : BackgroundService
+	public class Worker(ILogger<Worker> logger, IChannel channel, INotificationProvider notificationProvider, IRepository<Notification, Guid> notificationRepository) : BackgroundService
 	{
 		private const string _notificationQueueName = "ticketNotification";
 
@@ -35,6 +36,13 @@ namespace NotificationHandler
 			if (notification == null) return;
 
 			await notificationProvider.SendNotification(notification);
+			await SetNotificationInProgress(notification);
+		}
+
+		private async Task SetNotificationInProgress(Notification notification)
+		{
+			notification.RequestStatus = TicketManager.Common.Enums.NotificationRequestStatus.InProgress;
+			await notificationRepository.UpdateAsync(notification);
 		}
 	}
 }

@@ -1,9 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using TicketManager.Common.Enums;
 using TicketManager.Common.Interface;
-using TicketManager.Common.Models;
 using TicketManager.Common.Models.Entities;
-using TicketManager.DAL;
 
 namespace TicketManager.Controllers.Ticketing
 {
@@ -101,6 +99,13 @@ namespace TicketManager.Controllers.Ticketing
 			}
 
 			await _paymentRepository.UpdateAsync(paymentToUpdate);
+			await SendNotification(cart);
+		}
+
+		private async Task SendNotification(Cart cart)
+		{
+			var notification = await _notificationService.CreateNotification("Order placed", cart.User.Email, cart.User.Name, cart.TotalPrice, cart.Items);
+			await _notificationService.AddNotification(notification);
 		}
 	}
 }

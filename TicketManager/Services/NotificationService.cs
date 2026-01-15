@@ -4,6 +4,7 @@ using System.Text;
 using TicketManager.Common.Enums;
 using TicketManager.Common.Interface;
 using TicketManager.Common.Models;
+using TicketManager.Common.Models.Entities;
 
 namespace TicketManager.Services
 {
@@ -28,12 +29,12 @@ namespace TicketManager.Services
 			await _rabbitMqChannel.BasicPublishAsync(exchange: string.Empty, routingKey: _notificationQueueName, body: body);
 		}
 
-		public async Task CreateNotification(string operationName, string customerEmail, string customerName, float orderAmount, List<string> orderSummary)
+		public async Task<Notification> CreateNotification(string operationName, string customerEmail, string customerName, float orderAmount, List<CartItem> orderSummary)
 		{
 			var notificationContent = new
 			{
 				OrderAmount = orderAmount,
-				OrderSummary = orderSummary
+				OrderSummary = CreateOrderSummary(orderSummary)
 			};
 
 			var notificationParameters = new 
@@ -53,6 +54,13 @@ namespace TicketManager.Services
 			};
 
 			await _notificationRepository.CreateAsync(notification);
+
+			return notification;
+		}
+
+		private List<string> CreateOrderSummary(List<CartItem> items)
+		{
+			return items.Select(x => $"{x.Event.Name} - {x.Seat.SeatNumber}, {x.Price.PriceValue}").ToList();
 		}
 	}
 }

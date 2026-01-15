@@ -4,6 +4,7 @@ using SendGrid;
 using SendGrid.Helpers.Mail;
 using System.Net;
 using System.Text;
+using TicketManager.Common.Interface;
 using TicketManager.Common.Models;
 
 namespace NotificationHandler.Services
@@ -14,9 +15,12 @@ namespace NotificationHandler.Services
 		private const string _adminEmail = "a@a.com";
 		private const string _adminUserName = "Admin";
 
-		public EmailNotificationProvider()
+		private IRepository<Notification, Guid> _notificationRepository;
+
+		public EmailNotificationProvider(IRepository<Notification, Guid> notificationRepository)
 		{
 			_sendGridApiKey = Environment.GetEnvironmentVariable("SEND_GRID_API_KEY") ?? string.Empty;
+			_notificationRepository = notificationRepository;
 		}
 
 		public async Task SendNotification(Notification notification)
@@ -36,8 +40,13 @@ namespace NotificationHandler.Services
 
 			if (response != null && !response.IsSuccessStatusCode)
 			{
+				notification.RequestStatus = TicketManager.Common.Enums.NotificationRequestStatus.Error;
+				await _notificationRepository.UpdateAsync(notification);
 				throw new HttpRequestException("Email wasn't delivered.");
 			}
+
+			notification.RequestStatus = TicketManager.Common.Enums.NotificationRequestStatus.Sent;
+			await _notificationRepository.UpdateAsync(notification);
 		}
 
 		private string BuildEmailBody(Notification notification)

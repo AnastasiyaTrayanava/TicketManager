@@ -42,6 +42,7 @@ namespace TicketManager.DAL.Repositories
 		public async Task<Cart> GetByIdAsync(Guid id)
 		{
 			var cartToFind = await _context.Carts
+				.Include(x => x.User)
 				.Include(x => x.Items)
 				.ThenInclude(x => x.Seat)
 				.ThenInclude(x => x.Row)

@@ -4,6 +4,7 @@
 	{
 		None,
 		InProgress,
-		Sent
+		Sent,
+		Error
 	}
 }

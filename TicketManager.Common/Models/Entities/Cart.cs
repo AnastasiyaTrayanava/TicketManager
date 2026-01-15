@@ -13,8 +13,13 @@ namespace TicketManager.Common.Models.Entities
 
 		public int? PaymentId { get; set; }
 
+		public int UserId { get; set; }
+
 		[ForeignKey("PaymentId")]
 		public Payment? Payment { get; set; }
+
+		[ForeignKey("UserId")]
+		public User User { get; set; }
 
 		[NotMapped]
 		public float TotalPrice { get; set; }
